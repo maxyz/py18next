@@ -66,11 +66,11 @@ class Translator:
         return _deep_get(self.data[self.locale], path, default=_default)
 
 
-def str_to_datetime(dt_str, format="%Y-%m-%d") -> datetime:
+def str_to_datetime(dt_str: str, format="%Y-%m-%d") -> datetime:
     return datetime.strptime(dt_str, format)
 
 
-def datetime_to_str(dt, format="MMMM dd, yyyy", locale="en") -> str:
+def datetime_to_str(dt: datetime, format="MMMM dd, yyyy", locale="en") -> str:
     return format_datetime(dt, format=format, locale=locale)
 
 
