@@ -1,8 +1,8 @@
 import json
-from collections.abc import Iterable, Sequence
-from datetime import datetime
+from collections.abc import Callable, Iterable, Sequence
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Callable, Literal, IO, Self
+from typing import IO, Literal, Self
 
 import yaml
 from babel.dates import format_datetime
@@ -44,7 +44,8 @@ class Translator:
 
     def set_locale(self, locale: str) -> Self:
         if locale not in self.data:
-            raise ValueError("Invalid locale")
+            msg = "Invalid locale"
+            raise ValueError(msg)
         self.locale = locale
         return self
 
@@ -67,7 +68,7 @@ class Translator:
 
 
 def str_to_datetime(dt_str: str, format="%Y-%m-%d") -> datetime:
-    return datetime.strptime(dt_str, format)
+    return datetime.strptime(dt_str, format).replace(tzinfo=UTC)
 
 
 def datetime_to_str(dt: datetime, format="MMMM dd, yyyy", locale="en") -> str:

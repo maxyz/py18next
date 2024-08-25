@@ -3,7 +3,7 @@ import pytest
 import py18next
 
 
-@pytest.fixture()
+@pytest.fixture
 def instance():
     return py18next.create({"bar": "foo"})
 
@@ -12,7 +12,7 @@ def test_create(instance):
     assert instance.options.bar == "foo"
 
 
-@pytest.fixture()
+@pytest.fixture
 def instance_with_init(instance):
     return instance.init({"foo": "bar"})
 
@@ -23,7 +23,7 @@ def test_init(instance_with_init):
     assert instance.options.bar == "foo"
 
 
-@pytest.fixture()
+@pytest.fixture
 def instance_with_defaults():
     return py18next.Py18Next(
         {

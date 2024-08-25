@@ -24,4 +24,101 @@ build-backend = "pdm.pep517.api"
 [tool.pdm.dev-dependencies]
 dev = [
     "pytest>=8.3.2",
+    "ruff>=0.6.2",
 ]
+
+[tool.ruff.lint]
+select = [
+    # pycodestyle
+    "E",
+    # Pyflakes
+    "F",
+    # pyupgrade
+    "UP",
+    # flake8-bugbear
+    "B",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+
+    # Added rules
+
+    # pycodestyle [pycodestyle](https://pypi.org/project/pycodestyle/)
+    "W",
+
+    # McCabe [mccabe](https://pypi.org/project/mccabe/)
+    "C90",
+    # PEP8Naming [pep8-naming](https://pypi.org/project/pep8-naming/)
+    "N",
+    # Pydocstyle [pydocstyle](https://pypi.org/project/pydocstyle/)
+    "D",
+    # Flake8Async [flake8-async](https://pypi.org/project/flake8-async/)
+    "ASYNC",
+    # Flake8Bandit [flake8-bandit](https://pypi.org/project/flake8-bandit/)
+    "S",
+    # Flake8BooleanTrap [flake8-boolean-trap](https://pypi.org/project/flake8-boolean-trap/)
+    "FBT",
+    # Flake8Comprehensions [flake8-comprehensions](https://pypi.org/project/flake8-comprehensions/)
+    "C4",
+    # Flake8Datetimez [flake8-datetimez](https://pypi.org/project/flake8-datetimez/)
+    "DTZ",
+    # Flake8ErrMsg [flake8-errmsg](https://pypi.org/project/flake8-errmsg/)
+    "EM",
+    # Flake8ImportConventions [flake8-import-conventions](https://github.com/joaopalmeiro/flake8-import-conventions)
+    "ICN",
+    # Flake8Logging [flake8-logging](https://pypi.org/project/flake8-logging/)
+    "LOG",
+    # Flake8LoggingFormat [flake8-logging-format](https://pypi.org/project/flake8-logging-format/)
+    "G",
+    # Flake8Pie [flake8-pie](https://pypi.org/project/flake8-pie/)
+    "PIE",
+    # Flake8Pyi [flake8-pyi](https://pypi.org/project/flake8-pyi/)
+    "PYI",
+    # Flake8PytestStyle [flake8-pytest-style](https://pypi.org/project/flake8-pytest-style/)
+    "PT",
+    # Flake8Quotes [flake8-quotes](https://pypi.org/project/flake8-quotes/)
+    "Q",
+    # Flake8Raise [flake8-raise](https://pypi.org/project/flake8-raise/)
+    "RSE",
+    # Flake8Return [flake8-return](https://pypi.org/project/flake8-return/)
+    "RET",
+    # Flake8Self [flake8-self](https://pypi.org/project/flake8-self/)
+    "SLF",
+    # Flake8Simplify [flake8-simplify](https://pypi.org/project/flake8-simplify/)
+    "SIM",
+    # Flake8TidyImports [flake8-tidy-imports](https://pypi.org/project/flake8-tidy-imports/)
+    "TID",
+    # Flake8UsePathlib [flake8-use-pathlib](https://pypi.org/project/flake8-use-pathlib/)
+    "PTH",
+    # Flake8Todos [flake8-todos](https://github.com/orsinium-labs/flake8-todos/)
+    "TD",
+    # Pylint [pylint](https://pypi.org/project/pylint/)
+    "PLE",
+    "PLW",
+    "PLR",
+    "PLC",
+    # Tryceratops [tryceratops](https://pypi.org/project/tryceratops/)
+    "TRY",
+    # Flynt [flynt](https://pypi.org/project/flynt/)
+    "FLY",
+    # Perflint [Perflint](https://pypi.org/project/perflint/)
+    "PERF",
+    # Refurb [refurb](https://pypi.org/project/refurb/)
+    "FURB",
+    # Ruff-specific rules
+    "RUF",
+]
+ignore = [
+  "D100",
+  "D101",
+  "D102",
+  "D103",
+  "D104",
+  "D107",
+  "D203",
+  "D213",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["SLF001", "S101"]
