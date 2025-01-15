@@ -27,6 +27,7 @@ def test_init(instance_with_init):
 def instance_with_defaults():
     return py18next.Py18Next(
         {
+            "backend": {"load_path": "./tests/files/simple/{locale}.json"},
             "fallback_locale": "en",
             "resources": {
                 "en": {
@@ -45,4 +46,15 @@ def test_defaults(instance_with_defaults):
     p18 = instance_with_defaults
     assert p18.t("key") == "normal"
     assert p18.t("key_null") is None
+    assert p18.t("key_empty") == ""
+
+
+@pytest.fixture
+def instance_with_backend(instance_with_defaults):
+    return instance_with_defaults.use(py18next.FSBackend)
+
+
+def test_backend(instance_with_backend):
+    p18 = instance_with_backend
+    assert p18.t("key") == "simple value"
     assert p18.t("key_empty") == ""

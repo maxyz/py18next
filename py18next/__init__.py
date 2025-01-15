@@ -1,40 +1,40 @@
 from collections.abc import Callable, Iterable, Sequence
-from typing import Any, Self
+from typing import Any, Self, cast
 
-from pydantic import BaseModel, ConfigDict, TypeAdapter
-
-type ResourceValue = str | ResourceNamespace | None
-type ResourceNamespace = dict[str, ResourceValue]
-type ResourceLocale = dict[str, ResourceNamespace]
-type Resources = dict[str, ResourceLocale]
-
-
-class Options(BaseModel):
-    model_config = ConfigDict(frozen=True, extra="allow")
-
-    debug: bool = False
-
-    resources: dict[str, ResourceLocale] | None = None
-
-    locale: str | None = None
-    fallback_locale: str | None = None
-
-    namespace: str = "translation"
-    default_namespace: str = "translation"
-    fallback_namespace: str | None = None
-
-
-_options_ta = TypeAdapter(Options)
+from .plugins import FSBackend as FSBackend  # noqa: PLC0414
+from .types import (
+    BackendPlugin,
+    Options,
+    Plugin,
+    PluginType,
+    ResourceNamespace,
+    ResourceValue,
+    options_ta,
+)
 
 
 class Py18Next:
     options: Options
+    services: None = None
 
     def __init__(self: Self, options: Options | dict[str, Any] | None = None):
         self.options = _get_options(options)
+        self._backends = []
 
     def init(self, options: Options | dict[str, Any]) -> Self:
         self.options = _merge_options(self.options, options)
+        return self
+
+    def use(self, plugin: type[Plugin]) -> Self:
+        match plugin.type:
+            case PluginType.BACKEND:
+                backend_plugin = cast(type[BackendPlugin], plugin)
+                plugin_instance = backend_plugin(
+                    options=self.options,
+                    backend_options=self.options.backend,
+                    services=self.services,
+                )
+                self._backends.append(plugin_instance)
         return self
 
     def t(
@@ -48,11 +48,26 @@ class Py18Next:
 
         options = _merge_options(self.options, options)
         locale = _resolve_locale(options) or ""
-        resources = options.resources or {}
-        if (namespaces := resources.get(locale)) is None:
-            return _default()
         namespace = _resolve_namespace(options) or ""
-        if (translations := namespaces.get(namespace)) is None:
+
+        translations = None
+        translation = None
+        for backend in self._backends:
+            translations = backend.read(locale=locale, namespace=namespace)
+            if translations is None:
+                continue
+            translation = _deep_get(translations, path, default=None)
+            if translation:
+                break
+
+        if translation is not None:
+            return translation
+
+        # fallback to resources
+        resources = options.resources or {}
+        if ((namespaces := resources.get(locale)) is None) or (
+            (translations := namespaces.get(namespace)) is None
+        ):
             return _default()
 
         return _deep_get(translations, path, default=_default)
@@ -65,7 +80,7 @@ def create(options: Options | dict[str, Any]) -> Py18Next:
 def _get_options(options: Options | dict[str, Any] | None) -> Options:
     match options:
         case dict():
-            options = _options_ta.validate_python(options)
+            options = options_ta.validate_python(options)
         case None:
             options = Options()
     return options
@@ -81,7 +96,7 @@ def _merge_options(
 def _dump_options(options: Options | dict[str, Any] | None) -> dict[str, Any]:
     match options:
         case Options():
-            return _options_ta.dump_python(options)
+            return options_ta.dump_python(options)
         case None:
             return {}
         case dict():
